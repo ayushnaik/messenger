@@ -14,6 +14,20 @@ dotenv.config();
 mongoose.connect(process.env.MONGO_URL, (err) => {
   if (err) throw err;
 });
+
+/**
+ * MongoDB Connection
+ */
+mongoose
+  .connect(process.env.MONGO_URL)
+  .then(async () => {
+    console.log("DB Connection Successful");
+  })
+  .catch((err) => {
+    logger.error(err);
+    closeServer();
+    throw err;
+  });
 const jwtSecret = process.env.JWT_SECRET;
 const bcryptSalt = bcrypt.genSaltSync(10);
 
@@ -126,9 +140,42 @@ app.post("/register", async (req, res) => {
   }
 });
 
-const server = app.listen(4040, () => {
-  console.log("Listening on PORT: 4040");
-});
+const server = app.listen(4040);
+server.on("error", onError);
+server.on("listening", onListening);
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+function onError(error) {
+  if (error.syscall !== "listen") {
+    throw error;
+  }
+
+  var bind = typeof port === "string" ? "Pipe " + port : "Port " + port;
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case "EACCES":
+      logger.error(bind + " requires elevated privileges");
+      process.exit(1);
+    case "EADDRINUSE":
+      logger.error(bind + " is already in use");
+      process.exit(1);
+    default:
+      throw error;
+  }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+function onListening() {
+  var addr = server.address();
+  var bind = typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
+  // debug('Listening on ' + bind);
+  console.info("Listening on " + bind);
+}
 
 const wss = new ws.WebSocketServer({ server });
 wss.on("connection", (connection, req) => {
@@ -223,3 +270,39 @@ wss.on("connection", (connection, req) => {
   // notify everyone about online people (when someone connects)
   notifyAboutOnlinePeople();
 });
+
+//This is a signal handler. It is listening for the SIGTERM signal. When it receives the signal, it will log a warning and then close the server.
+process.on("SIGTERM", () => {
+  console.warn("SIGTERM Signal Recieved.");
+  console.info("Closing Http & Database Server.");
+  closeServer();
+});
+
+//Listening for the SIGINT signal. When it receives the signal, it will log a warning and then close the server.
+process.on("SIGINT", () => {
+  console.warn("SIGINT Signal Recieved.");
+  console.info("Closing Http & Database Server.");
+  closeServer();
+});
+
+//Listening for the SIGQUIT signal. When it receives the signal, it will log a warning and then close the server.
+process.on("SIGQUIT", () => {
+  console.warn("SIGQUIT Signal Recieved.");
+  console.info("Closing Http & Database Server.");
+  closeServer();
+});
+
+//This is a signal handler. It is listening for the SIGTERM signal. When it receives the signal, it will log a warning and then close the server.
+function closeServer() {
+  server.close(async () => {
+    console.debug("Http Server Closed.");
+    try {
+      await mongoose.connection.close();
+      await mongoose.disconnect();
+      console.debug("Database Server Closed.");
+      await process.exit(0);
+    } catch (err) {
+      console.debug("Something went wrong while closing Database Server.", err);
+    }
+  });
+}
