@@ -15,8 +15,12 @@ export default function Avatar({ userId, username, online }) {
   const colorIndex = userIdBase10 % colors.length;
   const color = colors[colorIndex];
   return (
-    <div className={"w-8 h-8 relative rounded-full flex items-center " + color}>
-      <div className="text-center w-full opacity-70">
+    <div
+      className={
+        "w-8 h-8 relative bg-blue-300 rounded-full flex items-center " + color
+      }
+    >
+      <div className="text-center w-full font-bold opacity-90">
         {username[0].toUpperCase()}
       </div>
       {online && (
