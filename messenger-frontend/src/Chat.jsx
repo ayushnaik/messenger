@@ -161,7 +161,7 @@ export default function Chat() {
             />
           ))}
         </div>
-        <div className="p-2 text-center flex items-center gap-2 justify-center">
+        <div className="border-t border-gray-100 p-2 text-center flex items-center gap-2 justify-center">
           <span className="mr-2 text-sm text-gray-600 flex items-center">
             <FaUserAlt className="mx-1" />
             {username}

@@ -24,10 +24,10 @@ export default function Avatar({ userId, username, online }) {
         {username[0].toUpperCase()}
       </div>
       {online && (
-        <div className="absolute w-3 h-3 bg-green-400 bottom-0 right-0 rounded-full border border-white"></div>
+        <div className="absolute w-3 h-3 bg-green-400 shadow-lg shadow-green-400 bottom-0 right-0 rounded-full border border-white"></div>
       )}
       {!online && (
-        <div className="absolute w-3 h-3 bg-gray-400 bottom-0 right-0 rounded-full border border-white"></div>
+        <div className="absolute w-3 h-3 bg-gray-400 shadow-lg shadow-slate-400 bottom-0 right-0 rounded-full border border-white"></div>
       )}
     </div>
   );
