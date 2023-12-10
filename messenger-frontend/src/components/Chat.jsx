@@ -1,6 +1,5 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import Avatar from "./Avatar";
-import Logo from "./Logo";
+import Logo from "./Logo.jsx";
 import { UserContext } from "./UserContext.jsx";
 import { uniqBy } from "lodash";
 import axios from "axios";
